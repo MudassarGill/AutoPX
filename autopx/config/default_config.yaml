@@ -1,0 +1,7 @@
+preprocessing:
+  lowercasing: true
+  remove_punctuation: true
+vectorization:
+  method: tfidf
+reports:
+  format: json

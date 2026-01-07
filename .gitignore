@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -7,6 +8,14 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+=======
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distributions
+>>>>>>> d7764f4 (Initial commit: AutoPX project structure + venv excluded)
 .Python
 build/
 develop-eggs/
@@ -20,6 +29,7 @@ parts/
 sdist/
 var/
 wheels/
+<<<<<<< HEAD
 share/python-wheels/
 *.egg-info/
 .installed.cfg
@@ -205,3 +215,19 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+=======
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Enviroments
+.env
+.venv
+venv/
+ENV/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+>>>>>>> d7764f4 (Initial commit: AutoPX project structure + venv excluded)
