@@ -1,20 +1,12 @@
-# autopx/__init__.py
-
-"""
-AutoPX: Automatic Preprocessing with eXplainability
-
-Main package initializer for the AutoPX library.
-This file exposes the core AutoPX class for external usage.
-"""
-
 from autopx.core.autopx import AutoPX
-from autopx.utils.constants import TaskType, ModelType, VectorizationType, Language
+from autopx.utils.constants import Language, TaskType, ModelType, VectorizationType
 
-# Expose these for easy import:
+__version__ = "1.0.2"
+
 __all__ = [
     "AutoPX",
+    "Language",
     "TaskType",
     "ModelType",
-    "VectorizationType",
-    "Language"
+    "VectorizationType"
 ]

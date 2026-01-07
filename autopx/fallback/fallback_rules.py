@@ -1,5 +1,3 @@
-# autopx/fallback/fallback_rules.py
-
 from autopx.utils.constants import VectorizationType
 
 class FallbackRules:
@@ -8,7 +6,7 @@ class FallbackRules:
     """
 
     def __init__(self):
-        # Define default fallback mapping
+        # Default fallback mapping
         self.vectorization_fallback = {
             VectorizationType.SEQUENCE: VectorizationType.TFIDF,
             VectorizationType.TFIDF: VectorizationType.COUNT,

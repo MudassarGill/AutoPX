@@ -1,5 +1,3 @@
-# autopx/reports/json_report.py
-
 import json
 from autopx.utils.logger import Logger
 
@@ -11,7 +9,7 @@ class JSONReport:
     def __init__(self):
         self.logger = Logger()
 
-    def generate(self, report_data, filepath=None):
+    def generate(self, report_data: dict, filepath: str = None) -> str | None:
         """
         Generates a JSON report from report_data dictionary.
         If filepath is provided, saves to file; otherwise returns JSON string.

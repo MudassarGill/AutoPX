@@ -1,5 +1,3 @@
-# autopx/reports/report_builder.py
-
 import json
 from autopx.reports.markdown_report import MarkdownReport
 from autopx.reports.pdf_report import PDFReport
@@ -16,21 +14,22 @@ class ReportBuilder:
         self.markdown = MarkdownReport()
         self.pdf = PDFReport()
 
-    def generate(self, report_data, format="pdf", filepath=None):
+    def generate(self, report_data: dict, format: str = "pdf", filepath: str = None) -> str | None:
         """
         Generate report in the requested format.
-        
+
         Args:
             report_data (dict): The preprocessing report data.
             format (str): "json", "markdown", or "pdf".
             filepath (str): Optional path to save the report.
-        
+
         Returns:
             str: Path to saved report or report content (for JSON/Markdown).
         """
         try:
             format = format.lower()
-            
+
+            # JSON report
             if format == "json":
                 json_str = json.dumps(report_data, indent=4)
                 if filepath:
@@ -40,14 +39,17 @@ class ReportBuilder:
                     return filepath
                 return json_str
 
-            elif format == "markdown" or format == "md":
+            # Markdown report
+            elif format in ["markdown", "md"]:
                 return self.markdown.generate(report_data, filepath)
 
+            # PDF report
             elif format == "pdf":
                 if not filepath:
                     filepath = "AutoPX_Report.pdf"
                 return self.pdf.generate(report_data, filepath)
 
+            # Unsupported format
             else:
                 self.logger.error(f"Unsupported report format: {format}")
                 return None

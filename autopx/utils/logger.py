@@ -1,5 +1,3 @@
-# autopx/utils/logger.py
-
 import logging
 import sys
 
@@ -11,27 +9,23 @@ class Logger:
     def __init__(self, name="AutoPX", level=logging.INFO):
         self.logger = logging.getLogger(name)
         self.logger.setLevel(level)
-        
-        # Avoid adding multiple handlers if logger is already configured
+
+        # Avoid multiple handlers
         if not self.logger.handlers:
-            # Console handler
             ch = logging.StreamHandler(sys.stdout)
             ch.setLevel(level)
-            
-            # Simple format: [LEVEL] message
             formatter = logging.Formatter("[%(levelname)s] %(message)s")
             ch.setFormatter(formatter)
-            
             self.logger.addHandler(ch)
-    
-    def info(self, msg):
+
+    def info(self, msg: str):
         self.logger.info(msg)
-    
-    def warning(self, msg):
+
+    def warning(self, msg: str):
         self.logger.warning(msg)
-    
-    def error(self, msg):
+
+    def error(self, msg: str):
         self.logger.error(msg)
-    
-    def debug(self, msg):
+
+    def debug(self, msg: str):
         self.logger.debug(msg)

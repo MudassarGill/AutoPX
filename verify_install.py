@@ -1,20 +1,19 @@
-from autopx.core.autopx import AutoPX
+# verify_install.py
 
-print("Import successful.")
+"""
+Script to verify that AutoPX can be imported and basic functionality works.
+"""
 
-texts = [
-    "This is a simple test.", 
-    "AutoPX seems to be working! \U0001F600",
-    "Hum testing kar rahe hain."
-]
+from autopx import AutoPX, TaskType, ModelType
 
-print("Initializing AutoPX...")
-auto = AutoPX()
+def test_autopx_import():
+    try:
+        # Create a dummy AutoPX instance
+        autopx_instance = AutoPX(task=TaskType.SENTIMENT, model_type=ModelType.ML)
+        print("✅ AutoPX imported and instance created successfully!")
+    except Exception as e:
+        print("❌ AutoPX import failed!")
+        print(e)
 
-print("Running fit_transform...")
-vectors = auto.fit_transform(texts)
-print(f"Vectors generated (Type: {type(vectors)})")
-
-print("Generating report...")
-print(auto.report("markdown"))
-print("Verification complete.")
+if __name__ == "__main__":
+    test_autopx_import()

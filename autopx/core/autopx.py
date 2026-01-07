@@ -1,88 +1,69 @@
 from autopx.core.data_analysis import DataAnalyzer
 from autopx.core.decision_engine import DecisionEngine
 from autopx.preprocessing.cleaner import Cleaner
-from autopx.utils.constants import TaskType, ModelType, VectorizationType
-from autopx.utils.logger import Logger
-from autopx.vectorizers.tfidf import TFIDF
-from autopx.vectorizers.count import Count
-from autopx.vectorizers.embeddings import Embeddings
+from autopx.vectorizers.count import VectorizerHelper
 from autopx.reports.report_builder import ReportBuilder
+from autopx.utils.constants import ModelType
+from autopx.utils.logger import Logger
+
 
 class AutoPX:
     """
-    Main AutoPX pipeline class.
-    Orchestrates the entire preprocessing workflow.
+    Main AutoPX pipeline class for intelligent text preprocessing.
     """
-    def __init__(self, task=None, model_type=ModelType.ML):
-        self.task = task
+
+    def __init__(self, model_type: ModelType = ModelType.ML):
         self.model_type = model_type
-        
         self.analyzer = DataAnalyzer()
         self.decision_engine = DecisionEngine()
         self.cleaner = Cleaner()
-        self.logger = Logger()
         self.report_builder = ReportBuilder()
-        
-        self.last_report = {}
-        
-    def fit_transform(self, texts):
+        self.logger = Logger(__name__)  # FIXED
+        self.last_report_data = {}
+
+    def preprocess(self, texts: list[str], task: str = None) -> tuple:
         """
-        Main method to preprocess data and return model-ready vectors.
+        Main method to preprocess texts and generate an explainable report.
+        Returns processed_data and a JSON report.
         """
-        self.logger.info("Starting AutoPX pipeline...")
+        self.logger.info("Starting AutoPX preprocessing pipeline...")
 
-        # 1️⃣ Analyze Data (Language, Stats)
-        analysis_report = self.analyzer.analyze(texts)
-        self.logger.info(f"Analysis complete. Detected Language: {analysis_report['language']}")
+        # 1. Analyze Data
+        analysis = self.analyzer.analyze(texts)
 
-        # 2️⃣ Infer Task (if not provided)
-        current_task = self.task
-        if not current_task:
-            current_task = self.decision_engine.infer_task(texts, analysis_report)
-            self.logger.info(f"Task inferred: {current_task}")
+        # 2. Infer Task
+        inferred_task = task if task else self.decision_engine.infer_task(texts, analysis)
+        self.logger.info(f"Task: {inferred_task} | Language: {analysis['language']}")
 
-        # 3️⃣ Clean Text
-        cleaned_texts = []
-        for t in texts:
-            cleaned_texts.append(self.cleaner.clean(t, current_task, analysis_report['language']))
-        self.logger.info("Text cleaning complete.")
+        # 3. Clean Texts
+        cleaned_texts = [self.cleaner.clean(t, inferred_task, analysis["language"]) for t in texts]
 
-        # 4️⃣ Select Vectorization
+        # 4. Vectorization
         vec_strategy = self.decision_engine.select_vectorization(
-            current_task,
+            inferred_task,
             self.model_type,
-            analysis_report['dataset_size']
+            analysis["dataset_size"]
         )
-        self.logger.info(f"Vectorization strategy selected: {vec_strategy}")
 
-        # 5️⃣ Store Report Info
-        self.last_report = {
-            'analysis': analysis_report,
-            'task': current_task,
-            'vectorization': vec_strategy,
-            'cleaned_texts': cleaned_texts
+        vectorizer = VectorizerHelper(strategy=vec_strategy)
+        processed_data = vectorizer.fit_transform(cleaned_texts)
+
+        # 5. Save Report Data
+        self.last_report_data = {
+            "analysis": analysis,
+            "task": inferred_task,
+            "vectorization": vec_strategy,
+            "cleaned_sample": cleaned_texts[:5]
         }
 
-        # 6️⃣ Apply Vectorization
-        if vec_strategy == VectorizationType.TFIDF:
-            vectors = TFIDF().fit_transform(cleaned_texts)
-        elif vec_strategy == VectorizationType.COUNT:
-            vectors = Count().fit_transform(cleaned_texts)
-        elif vec_strategy == VectorizationType.EMBEDDINGS:
-            vectors = Embeddings().fit_transform(cleaned_texts)
-        else:
-            self.logger.info("Unknown vectorization strategy. Defaulting to TFIDF.")
-            vectors = TFIDF().fit_transform(cleaned_texts)
+        # 6. Generate JSON Report
+        report = self.report_builder.generate(self.last_report_data, format="json")
 
-        self.logger.info("Vectorization complete.")
-        return vectors
+        self.logger.info("Preprocessing complete.")
+        return processed_data, report
 
-    def report(self, format="pdf"):
+    def get_report(self, format: str = "markdown"):
         """
-        Generates an explainable report of the last preprocessing run.
+        Returns the report in the specified format for the last run.
         """
-        if not self.last_report:
-            self.logger.info("No report available. Run fit_transform() first.")
-            return None
-        self.logger.info(f"Generating {format} report...")
-        return self.report_builder.generate(self.last_report, format=format)
+        return self.report_builder.generate(self.last_report_data, format=format)

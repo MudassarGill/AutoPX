@@ -1,11 +1,10 @@
 # autopx/reports/pdf_report.py
 
-# In a real environment, reportlab would need to be installed.
+# ReportLab imports with fallback
 try:
     from reportlab.lib.pagesizes import A4
     from reportlab.pdfgen import canvas
 except ImportError:
-    # Minimal mock if reportlab is not available
     class canvas:
         class Canvas:
             def __init__(self, *args, **kwargs): pass
@@ -15,18 +14,30 @@ except ImportError:
     A4 = (595.27, 841.89)
 
 from autopx.utils.logger import Logger
+from typing import Optional, Dict, Union
 
 class PDFReport:
     """
-    Generates a PDF formatted preprocessing report.
+    Generates a PDF formatted preprocessing report for AutoPX.
     """
 
     def __init__(self):
         self.logger = Logger()
 
-    def generate(self, report_data, filepath="AutoPX_Report.pdf"):
+    def generate(
+        self,
+        report_data: Dict[str, Union[str, dict]] ,
+        filepath: str = "AutoPX_Report.pdf"
+    ) -> Optional[str]:
         """
         Generates a PDF report from report_data dictionary.
+
+        Args:
+            report_data (dict): Dictionary containing analysis, task, and vectorization info.
+            filepath (str): Path to save the PDF report.
+
+        Returns:
+            str: Path to the saved PDF file, or None on failure.
         """
         try:
             c = canvas.Canvas(filepath, pagesize=A4)
@@ -53,16 +64,17 @@ class PDFReport:
             c.drawString(70, y, f"Emojis present: {analysis.get('has_emojis', False)}")
             y -= 30
 
-            # Task
+            # Task Section
             task = report_data.get('task', 'N/A')
             c.drawString(50, y, f"Task Inferred: {task}")
             y -= 30
 
-            # Vectorization
+            # Vectorization Section
             vectorization = report_data.get('vectorization', 'N/A')
             c.drawString(50, y, f"Vectorization Strategy: {vectorization}")
             y -= 30
 
+            # Save PDF
             c.save()
             self.logger.info(f"PDF report saved to {filepath}")
             return filepath

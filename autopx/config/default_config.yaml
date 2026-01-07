@@ -1,7 +1,38 @@
+# autopx/config/default_config.yaml
+
+# Default configuration for AutoPX
+
 preprocessing:
-  lowercasing: true
-  remove_punctuation: true
+  lowercase: true
+  remove_urls: true
+  remove_special_chars: true
+  preserve_emojis_for_tasks:
+    - sentiment
+    - chatbot
+  stopword_handling:
+    sentiment: preserve
+    topic_modeling: remove
+    chatbot: preserve
+  max_sequence_length: 128  # default for DL / transformer tasks
+
 vectorization:
-  method: tfidf
-reports:
-  format: json
+  default_ml: tfidf           # default for small ML tasks
+  default_count_threshold: 1000
+  default_dl: embeddings      # embeddings for DL tasks
+  sequence_strategy: auto     # automatically choose sequence type
+
+tasks:
+  sentiment:
+    min_length: 5
+    max_length: 50
+  topic_modeling:
+    min_length: 50
+    max_length: 1000
+  chatbot:
+    min_length: 1
+    max_length: 50
+
+logging:
+  level: info
+  log_to_file: false
+  log_file: autopx.log

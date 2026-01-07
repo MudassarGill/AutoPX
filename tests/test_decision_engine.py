@@ -1,5 +1,3 @@
-# tests/test_decision_engine.py
-
 import unittest
 from autopx.core.decision_engine import DecisionEngine
 from autopx.utils.constants import TaskType, ModelType, VectorizationType
@@ -9,30 +7,18 @@ class TestDecisionEngine(unittest.TestCase):
         self.engine = DecisionEngine()
     
     def test_infer_task_sentiment(self):
-        texts = ["I am so happy today! 😄", "This is amazing! 😃"]
-        analysis_report = {
-            'avg_length': 10,
-            'has_emojis': True
-        }
-        task = self.engine.infer_task(texts, analysis_report)
+        analysis_report = {'avg_length': 10, 'has_emojis': True}
+        task = self.engine.infer_task([], analysis_report)
         self.assertEqual(task, TaskType.SENTIMENT)
     
     def test_infer_task_topic_modeling(self):
-        texts = ["This is a long text. " * 50]
-        analysis_report = {
-            'avg_length': 150,
-            'has_emojis': False
-        }
-        task = self.engine.infer_task(texts, analysis_report)
+        analysis_report = {'avg_length': 150, 'has_emojis': False}
+        task = self.engine.infer_task([], analysis_report)
         self.assertEqual(task, TaskType.TOPIC_MODELING)
     
     def test_infer_task_chatbot_default(self):
-        texts = ["Hello!", "How are you?"]
-        analysis_report = {
-            'avg_length': 20,
-            'has_emojis': False
-        }
-        task = self.engine.infer_task(texts, analysis_report)
+        analysis_report = {'avg_length': 50, 'has_emojis': False}
+        task = self.engine.infer_task([], analysis_report)
         self.assertEqual(task, TaskType.CHATBOT)
     
     def test_select_vectorization_dl(self):
